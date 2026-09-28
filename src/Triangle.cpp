@@ -94,17 +94,17 @@ void Triangle::setColor(Color color)
  */
 Vec4 Triangle::calculateNormal()
 {
-    Vec4 edge1 = points[1].subtract(points[0]);
-    Vec4 edge2 = points[2].subtract(points[0]);
+    Vec4 edge1 = points[1] - points[0];
+    Vec4 edge2 = points[2] - points[0];
 
-    Vec4 cross = edge1.cross(edge2);
+    Vec4 cross = Vec4::cross(edge1, edge2);
 
     float length = std::sqrt(cross.getX() * cross.getX() + cross.getY() * cross.getY() + cross.getZ() * cross.getZ());
     if (length == 0)
     {
         return cross;
     }
-    return cross.scale(1.0f / length);
+    return cross * (1.0f / length);
 }
 
 /**

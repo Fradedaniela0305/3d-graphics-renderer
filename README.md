@@ -202,7 +202,6 @@ $$
 t = \frac{\text{near} - A_z}{B_z - A_z}, \qquad \text{intersection} = A + t \cdot (B - A)
 $$
 
-> **Known issue:** this stage was added recently and still has a couple of open bugs in the 1-inside / 2-inside triangulation — visible as occasional flicker or incorrect winding on geometry crossing the near plane.
 
 ### 7. Projection (view to clip space)
 
@@ -265,10 +264,11 @@ Two rasterizers exist in `Window`:
 - `drawFilledTriangle` — fills the triangle using SDL's `SDL_RenderGeometry`, shaded per-triangle. This is what the demo currently uses.
 - `drawTriangle` — draws the triangle's three edges as lines (wireframe).
 
-## What's implemented so far
+## What's implemented 
 
 - `.obj` mesh loading
 - Homogeneous-coordinate vector/matrix math (`Vec4`, `Matrix4x4`)
+- Clean `Vec4` math API — `+`, `-`, and `*` (scalar and component-wise) operator overloads, plus static `Vec4::cross(a, b)` / `Vec4::dot(a, b)` functions
 - Model rotation, world translation, camera-relative view transform
 - Camera movement (WASD + up/down) and yaw look-around (left/right arrows) via a rotating camera basis
 - Back-face culling
@@ -279,13 +279,6 @@ Two rasterizers exist in `Window`:
 - Basic per-triangle grayscale shading
 - Filled-triangle rasterization (currently used by the demo); wireframe rasterizer also available
 
-## What's being worked on
-
-- Fixing the 2 known bugs in near-plane clipping
-- Camera pitch (looking up/down)
-- Proper lighting model
-- Z-buffering
-- Clipping against the far/side planes
 
 ## Testing
 

@@ -90,33 +90,9 @@ void Vec4::setW(float w)
 }
 
 /**
- * Returns a new vector with the given amounts added to each component
- */
-Vec4 Vec4::shift(float xAmount, float yAmount, float zAmount, float wAmount)
-{
-    return Vec4(components[0] + xAmount, components[1] + yAmount, components[2] + zAmount, components[3] + wAmount);
-}
-
-/**
- * Returns a new vector with each component multiplied by the given factor
- */
-Vec4 Vec4::scale(float factor)
-{
-    return Vec4(components[0] * factor, components[1] * factor, components[2] * factor, components[3] * factor);
-}
-
-/**
- * Returns a new vector with each component multiplied by its own given factor
- */
-Vec4 Vec4::scale(float xFactor, float yFactor, float zFactor, float wFactor)
-{
-    return Vec4(components[0] * xFactor, components[1] * yFactor, components[2] * zFactor, components[3] * wFactor);
-}
-
-/**
  * Returns a new vector representing this vector plus the given vector
  */
-Vec4 Vec4::add(Vec4 other)
+Vec4 Vec4::operator+(Vec4 other)
 {
     return Vec4(components[0] + other.getX(), components[1] + other.getY(), components[2] + other.getZ(), components[3] + other.getW());
 }
@@ -124,9 +100,25 @@ Vec4 Vec4::add(Vec4 other)
 /**
  * Returns a new vector representing this vector minus the given vector
  */
-Vec4 Vec4::subtract(Vec4 other)
+Vec4 Vec4::operator-(Vec4 other)
 {
     return Vec4(components[0] - other.getX(), components[1] - other.getY(), components[2] - other.getZ(), components[3] - other.getW());
+}
+
+/**
+ * Returns a new vector with each component multiplied by the given factor
+ */
+Vec4 Vec4::operator*(float factor)
+{
+    return Vec4(components[0] * factor, components[1] * factor, components[2] * factor, components[3] * factor);
+}
+
+/**
+ * Returns a new vector with each component multiplied by the other vector's corresponding component
+ */
+Vec4 Vec4::operator*(Vec4 other)
+{
+    return Vec4(components[0] * other.getX(), components[1] * other.getY(), components[2] * other.getZ(), components[3] * other.getW());
 }
 
 /**
@@ -143,29 +135,29 @@ Vec4 Vec4::perspectiveDivide()
 }
 
 /**
- * Returns the cross product of this vector and the given vector, calculated as this x other
+ * Returns the cross product of the two given vectors, calculated as a x b
  */
-Vec4 Vec4::cross(Vec4 other)
+Vec4 Vec4::cross(Vec4 a, Vec4 b)
 {
     return Vec4(
-        components[1] * other.getZ() - components[2] * other.getY(),
-        components[2] * other.getX() - components[0] * other.getZ(),
-        components[0] * other.getY() - components[1] * other.getX(),
+        a.getY() * b.getZ() - a.getZ() * b.getY(),
+        a.getZ() * b.getX() - a.getX() * b.getZ(),
+        a.getX() * b.getY() - a.getY() * b.getX(),
         0.0f);
 }
 
 /**
- * Returns the dot product of the normalized versions of this vector and the given vector
+ * Returns the dot product of the normalized versions of the two given vectors
  */
-float Vec4::dot(Vec4 other)
+float Vec4::dot(Vec4 a, Vec4 b)
 {
-    float thisLength = std::sqrt(components[0] * components[0] + components[1] * components[1] + components[2] * components[2] + components[3] * components[3]);
-    float otherLength = std::sqrt(other.getX() * other.getX() + other.getY() * other.getY() + other.getZ() * other.getZ() + other.getW() * other.getW());
-    if (thisLength == 0 || otherLength == 0)
+    float aLength = std::sqrt(a.getX() * a.getX() + a.getY() * a.getY() + a.getZ() * a.getZ() + a.getW() * a.getW());
+    float bLength = std::sqrt(b.getX() * b.getX() + b.getY() * b.getY() + b.getZ() * b.getZ() + b.getW() * b.getW());
+    if (aLength == 0 || bLength == 0)
     {
         return 0.0f;
     }
-    return (components[0] * other.getX() + components[1] * other.getY() + components[2] * other.getZ() + components[3] * other.getW()) / (thisLength * otherLength);
+    return (a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ() + a.getW() * b.getW()) / (aLength * bLength);
 }
 
 /**

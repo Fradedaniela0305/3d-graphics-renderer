@@ -68,40 +68,28 @@ public:
     void setW(float w);
 
     /**
-     * Returns a new vector with the given amounts added to each component
-     * @param xAmount - value to add to the x component
-     * @param yAmount - value to add to the y component
-     * @param zAmount - value to add to the z component
-     * @param wAmount - value to add to the w component
-     */
-    Vec4 shift(float xAmount, float yAmount, float zAmount, float wAmount);
-
-    /**
-     * Returns a new vector with each component multiplied by the given factor
-     * @param factor - value to multiply each component by
-     */
-    Vec4 scale(float factor);
-
-    /**
-     * Returns a new vector with each component multiplied by its own given factor
-     * @param xFactor - value to multiply the x component by
-     * @param yFactor - value to multiply the y component by
-     * @param zFactor - value to multiply the z component by
-     * @param wFactor - value to multiply the w component by
-     */
-    Vec4 scale(float xFactor, float yFactor, float zFactor, float wFactor);
-
-    /**
      * Returns a new vector representing this vector plus the given vector
      * @param other - vector to add to this vector
      */
-    Vec4 add(Vec4 other);
+    Vec4 operator+(Vec4 other);
 
     /**
      * Returns a new vector representing this vector minus the given vector
      * @param other - vector to subtract from this vector
      */
-    Vec4 subtract(Vec4 other);
+    Vec4 operator-(Vec4 other);
+
+    /**
+     * Returns a new vector with each component multiplied by the given factor
+     * @param factor - value to multiply each component by
+     */
+    Vec4 operator*(float factor);
+
+    /**
+     * Returns a new vector with each component multiplied by the other vector's corresponding component
+     * @param other - vector to multiply this vector by, component-wise
+     */
+    Vec4 operator*(Vec4 other);
 
     /**
      * Returns a new vector with the x, y, and z components divided by w (perspective divide)
@@ -109,19 +97,21 @@ public:
     Vec4 perspectiveDivide();
 
     /**
-     * Returns the cross product of this vector and the given vector, calculated as this x other.
+     * Returns the cross product of the two given vectors, calculated as a x b.
      * Only the x, y, and z components participate; the w component of the result is always 0,
      * since the cross product represents a direction rather than a position.
-     * @param other - vector to cross with this vector
+     * @param a - first vector
+     * @param b - second vector
      */
-    Vec4 cross(Vec4 other);
+    static Vec4 cross(Vec4 a, Vec4 b);
 
     /**
-     * Returns the dot product of the normalized versions of this vector and the given vector,
+     * Returns the dot product of the normalized versions of the two given vectors,
      * equivalent to the cosine of the angle between them. Returns 0 if either vector has zero length.
-     * @param other - vector to dot with this vector
+     * @param a - first vector
+     * @param b - second vector
      */
-    float dot(Vec4 other);
+    static float dot(Vec4 a, Vec4 b);
 
     /**
      * Prints the vector's components to standard output
