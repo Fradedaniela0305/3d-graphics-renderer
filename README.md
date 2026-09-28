@@ -1,4 +1,4 @@
-# graphics-3d-renderer
+# 3d-graphics-renderer
 
 A software 3D graphics engine built from scratch in C++ to develop a low-level understanding of how 3D rendering actually works. Vertices are transformed, projected, and rasterized by hand. SDL2 is used only to open a window and set pixels/lines on screen.
 
