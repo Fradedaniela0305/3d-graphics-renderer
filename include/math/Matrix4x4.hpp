@@ -1,6 +1,5 @@
 #pragma once
 #include "Vec4.hpp"
-#include "Triangle.hpp"
 
 /**
  * Represents a 4x4 matrix
@@ -28,12 +27,6 @@ public:
      * @param vector - vector to be transformed
      */
     Vec4 transformVector(Vec4 vector);
-
-    /**
-     * Transforms a triangle by a 4x4 matrix
-     * @param triangle - triangle to be transformed
-     */
-    Triangle transformTriangle(Triangle triangle);
 
     /**
      * Getter for row one

@@ -1,5 +1,4 @@
-build/main.o: src/main.cpp include/Window.hpp include/Color.hpp \
-  include/Triangle.hpp include/math/Vec4.hpp \
+build/main.o: src/main.cpp include/Window.hpp \
   /opt/homebrew/include/SDL2/SDL.h /opt/homebrew/include/SDL2/SDL_main.h \
   /opt/homebrew/include/SDL2/SDL_stdinc.h \
   /opt/homebrew/include/SDL2/SDL_config.h \
@@ -49,16 +48,11 @@ build/main.o: src/main.cpp include/Window.hpp include/Color.hpp \
   /opt/homebrew/include/SDL2/SDL_timer.h \
   /opt/homebrew/include/SDL2/SDL_version.h \
   /opt/homebrew/include/SDL2/SDL_locale.h \
-  /opt/homebrew/include/SDL2/SDL_misc.h include/math/Matrix4x4.hpp \
-  include/Mesh.hpp
+  /opt/homebrew/include/SDL2/SDL_misc.h include/Input.hpp \
+  include/Renderer.hpp include/Color.hpp include/Triangle.hpp \
+  include/math/Vec4.hpp include/math/Matrix4x4.hpp include/Mesh.hpp
 
 include/Window.hpp:
-
-include/Color.hpp:
-
-include/Triangle.hpp:
-
-include/math/Vec4.hpp:
 
 /opt/homebrew/include/SDL2/SDL.h:
 
@@ -161,6 +155,16 @@ include/math/Vec4.hpp:
 /opt/homebrew/include/SDL2/SDL_locale.h:
 
 /opt/homebrew/include/SDL2/SDL_misc.h:
+
+include/Input.hpp:
+
+include/Renderer.hpp:
+
+include/Color.hpp:
+
+include/Triangle.hpp:
+
+include/math/Vec4.hpp:
 
 include/math/Matrix4x4.hpp:
 

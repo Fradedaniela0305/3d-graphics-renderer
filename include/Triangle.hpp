@@ -1,8 +1,8 @@
 #pragma once
 #include "Color.hpp"
 #include "math/Vec4.hpp"
+#include "math/Matrix4x4.hpp"
 #include <vector>
-#include "Color.hpp"
 
 /**
  * Represents a triangle with 3 points in 3-dimensional space, points are in clockwise order.
@@ -21,11 +21,6 @@ public:
      * Constructor to create a triangle in 2-dimensional
      */
     Triangle();
-
-    /**
-     * Constructor to create a triangle in 3-d with color and normal given
-     */
-    Triangle(Vec4 p1, Vec4 p2, Vec4 p3, Color color, Vec4 normal);
 
     /**
      * Getter for point one
@@ -102,6 +97,12 @@ public:
      * Returns midpoint of zth value of the triangle
      */
     float zthMidPoint();
+
+    /**
+     * Returns a new triangle with each point transformed by the given matrix
+     * @param matrix - the matrix to transform this triangle's points by
+     */
+    Triangle transformedBy(Matrix4x4 matrix);
 
 private:
     std::vector<Vec4> points;

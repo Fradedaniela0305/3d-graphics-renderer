@@ -1,4 +1,6 @@
 #include "Window.hpp"
+#include "Input.hpp"
+#include "Renderer.hpp"
 #include "math/Vec4.hpp"
 #include "math/Matrix4x4.hpp"
 #include "Mesh.hpp"
@@ -16,10 +18,13 @@ int main()
     {
         return 1;
     }
+    Input input;
+    Renderer renderer(window.getRenderer());
 
     int width = 800;
     int height = 600;
 
+    // TODO: refactor — projection-matrix math belongs in a Camera/Projection class, not loose in main()
     float aspectRatio = (float)width / height;
     float fView = 90.0f;
     float fFar = 1000.0f;
@@ -75,40 +80,42 @@ int main()
     while (!window.shouldClose())
     {
         window.pollEvents();
+        input.poll();
 
-        if (window.isKeyDown(SDL_SCANCODE_W))
+        if (input.isKeyDown(SDL_SCANCODE_W))
         {
             camera = camera + cameraForward * (1*factor);
         }
-        if (window.isKeyDown(SDL_SCANCODE_A))
+        if (input.isKeyDown(SDL_SCANCODE_A))
         {
             camera = camera + cameraRight * (-1*factor);
         }
-        if (window.isKeyDown(SDL_SCANCODE_S))
+        if (input.isKeyDown(SDL_SCANCODE_S))
         {
             camera = camera + cameraForward * (1*factor);
         }
-        if (window.isKeyDown(SDL_SCANCODE_D))
+        if (input.isKeyDown(SDL_SCANCODE_D))
         {
             camera = camera + cameraRight * (1*factor);
         }
-        if (window.isKeyDown(SDL_SCANCODE_UP))
+        if (input.isKeyDown(SDL_SCANCODE_UP))
         {
             camera = camera + cameraUp * (1*factor);
         }
-        if (window.isKeyDown(SDL_SCANCODE_LEFT))
+        if (input.isKeyDown(SDL_SCANCODE_LEFT))
         {
             yawAngle -= .1*factor;
         }
-        if (window.isKeyDown(SDL_SCANCODE_RIGHT))
+        if (input.isKeyDown(SDL_SCANCODE_RIGHT))
         {
             yawAngle += .1*factor;
         }
-        if (window.isKeyDown(SDL_SCANCODE_DOWN))
+        if (input.isKeyDown(SDL_SCANCODE_DOWN))
         {
             camera = camera + cameraUp * (-1*factor);
         }
 
+        // TODO: refactor — camera orientation/basis update belongs in a Camera class, not loose in main()
         cameraForward.setX(sinf(yawAngle));
         cameraForward.setY(0.0f);
         cameraForward.setZ(cosf(yawAngle));
@@ -121,13 +128,16 @@ int main()
         Vec4 viewLight = cameraRotationMatrix.transformVector(lightVec);
         
 
-        window.clear({20, 20, 20});
+        renderer.clear({20, 20, 20});
         angle += 0.01;
         sortedShipMesh.clearMesh();
         clippedTrianglesMesh.clearMesh();
+        // TODO: refactor — this entire per-triangle pipeline (model rotation, view transform,
+        // back-face culling, near-plane clipping) belongs in a render-pipeline/clipper class, not loose in main()
         for (Triangle &t : shipMesh.getMesh())
         {
 
+            // TODO: refactor — this model-rotation state/math belongs on the model/entity itself, not loose in main()
             float c = cosf(angle);
             float s = sinf(angle);
             float ch = cosf(angle * 0.5f);
@@ -139,14 +149,14 @@ int main()
                 Vec4{0, -sh, ch, 0},
                 Vec4{0, 0, 0, 1}};
 
-            // Triangle transformedTriangle = rotationMat.transformTriangle(t);
-            Triangle translatedTriangle = translationMat.transformTriangle(t);
+            // Triangle transformedTriangle = t.transformedBy(rotationMat);
+            Triangle translatedTriangle = t.transformedBy(translationMat);
 
             Triangle viewedTriangle{translatedTriangle.getP1() - camera,
                                     translatedTriangle.getP2() - camera,
                                     translatedTriangle.getP3() - camera};
 
-            Triangle cameraViewTriangle = cameraRotationMatrix.transformTriangle(viewedTriangle);
+            Triangle cameraViewTriangle = viewedTriangle.transformedBy(cameraRotationMatrix);
 
             Vec4 normal = cameraViewTriangle.getNormal();
             Vec4 cameraToPlaneVec = cameraViewTriangle.getP1();
@@ -252,9 +262,11 @@ int main()
             }
         }
 
+        // TODO: refactor — projecting to screen space and shading by light belongs in a
+        // Rasterizer/Projector + Shader class, not loose in main()
         for (Triangle &t : clippedTrianglesMesh.getMesh()) {
 
-            Triangle projectedTriangle = projectionMat.transformTriangle(t);
+            Triangle projectedTriangle = t.transformedBy(projectionMat);
 
             Vec4 p1 = (projectedTriangle.getP1().perspectiveDivide() * Vec4(1, -1, 1, 1) + Vec4(1.0f, 1.0f, 0, 0)) * Vec4(0.5f * width, 0.5f * height, 1, 1);
             Vec4 p2 = (projectedTriangle.getP2().perspectiveDivide() * Vec4(1, -1, 1, 1) + Vec4(1.0f, 1.0f, 0, 0)) * Vec4(0.5f * width, 0.5f * height, 1, 1);
@@ -272,11 +284,11 @@ int main()
         for (Triangle &drawnTriangle : sortedShipMesh.getMesh())
         {
 
-            window.drawFilledTriangle(drawnTriangle, drawnTriangle.getColor());
-            // window.drawTriangle(drawnTriangle, {0, 0, 0});
+            renderer.drawFilledTriangle(drawnTriangle, drawnTriangle.getColor());
+            // renderer.drawTriangle(drawnTriangle, {0, 0, 0});
         }
 
-        window.present();
+        renderer.present();
     }
 
     return 0;

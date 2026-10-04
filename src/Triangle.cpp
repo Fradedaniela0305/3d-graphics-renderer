@@ -15,18 +15,6 @@ Triangle::Triangle(Vec4 p1, Vec4 p2, Vec4 p3)
 }
 
 /**
- * Constructor to create a triangle in 4-dimensional space with 3 points. Last coordinate is set to 0
- */
-Triangle::Triangle(Vec4 p1, Vec4 p2, Vec4 p3, Color color, Vec4 normal)
-{
-    points.push_back(p1);
-    points.push_back(p2);
-    points.push_back(p3);
-    color = color;
-    normal = normal;
-}
-
-/**
  * Constructor to create a triangle in 4-dimensional space
  */
 Triangle::Triangle()
@@ -190,6 +178,18 @@ bool Triangle::isBehindNearPlane(float nearPlane)
  */
 float Triangle::zthMidPoint() {
     return (points[0].getZ() + points[1].getZ() + points[2].getZ()) / 3.0f;
+}
+
+/**
+ * Returns a new triangle with each point transformed by the given matrix
+ */
+Triangle Triangle::transformedBy(Matrix4x4 matrix)
+{
+    Vec4 p1 = matrix.transformVector(points[0]);
+    Vec4 p2 = matrix.transformVector(points[1]);
+    Vec4 p3 = matrix.transformVector(points[2]);
+
+    return Triangle{p1, p2, p3};
 }
 
 /**

@@ -47,20 +47,6 @@ Vec4 Matrix4x4::transformVector(Vec4 vector)
 }
 
 /**
- * Transforms a triangle by a 4x4 matrix
- * @param triangle - triangle to be transformed
- */
-Triangle Matrix4x4::transformTriangle(Triangle triangle)
-{
-
-    Vec4 p1 = transformVector(triangle.getP1());
-    Vec4 p2 = transformVector(triangle.getP2());
-    Vec4 p3 = transformVector(triangle.getP3());
-
-    return Triangle{p1, p2, p3};
-}
-
-/**
  * Getter for row one
  */
 Vec4 Matrix4x4::getR1()
