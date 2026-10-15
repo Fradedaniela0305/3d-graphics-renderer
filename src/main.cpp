@@ -5,6 +5,7 @@
 #include "math/Matrix4x4.hpp"
 #include "Mesh.hpp"
 #include "Triangle.hpp"
+#include "Clock.hpp"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -62,7 +63,7 @@ int main()
     Vec4 lightVec{0.0, 0.0, -1.0, 0.0};
 
     Mesh shipMesh;
-    bool loaded = shipMesh.loadFromObjectFile("objects/cube.obj");
+    bool loaded = shipMesh.loadFromObjectFile("objects/teapot.obj");
     Mesh sortedShipMesh;
     Mesh clippedTrianglesMesh;
 
@@ -77,8 +78,20 @@ int main()
     Matrix4x4 rotationMat;
     float factor = .01;
 
+    Clock phaseClock;
+    float inputTimeAccumSec = 0.0f;
+    float cameraTimeAccumSec = 0.0f;
+    float clearTimeAccumSec = 0.0f;
+    float transformClipTimeAccumSec = 0.0f;
+    float projectShadeTimeAccumSec = 0.0f;
+    float sortTimeAccumSec = 0.0f;
+    float drawTimeAccumSec = 0.0f;
+    int frameCount = 0;
+
     while (!window.shouldClose())
     {
+        phaseClock.tick();
+
         window.pollEvents();
         input.poll();
 
@@ -115,6 +128,8 @@ int main()
             camera = camera + cameraUp * (-1*factor);
         }
 
+        inputTimeAccumSec += phaseClock.tick();
+
         // TODO: refactor — camera orientation/basis update belongs in a Camera class, not loose in main()
         cameraForward.setX(sinf(yawAngle));
         cameraForward.setY(0.0f);
@@ -126,14 +141,21 @@ int main()
         Matrix4x4 cameraRotationMatrix{cameraRight, cameraUp, cameraForward, Vec4{0, 0, 0, 1}};
 
         Vec4 viewLight = cameraRotationMatrix.transformVector(lightVec);
-        
+
+        cameraTimeAccumSec += phaseClock.tick();
 
         renderer.clear({20, 20, 20});
+
+        clearTimeAccumSec += phaseClock.tick();
+
         angle += 0.01;
         sortedShipMesh.clearMesh();
         clippedTrianglesMesh.clearMesh();
         // TODO: refactor — this entire per-triangle pipeline (model rotation, view transform,
         // back-face culling, near-plane clipping) belongs in a render-pipeline/clipper class, not loose in main()
+        Triangle transformedTriangle;
+        Triangle translatedTriangle;
+        Triangle cameraViewTriangle;
         for (Triangle &t : shipMesh.getMesh())
         {
 
@@ -149,14 +171,14 @@ int main()
                 Vec4{0, -sh, ch, 0},
                 Vec4{0, 0, 0, 1}};
 
-            // Triangle transformedTriangle = t.transformedBy(rotationMat);
-            Triangle translatedTriangle = t.transformedBy(translationMat);
+            t.transformedBy(rotationMat, transformedTriangle);
+            transformedTriangle.transformedBy(translationMat, translatedTriangle);
 
             Triangle viewedTriangle{translatedTriangle.getP1() - camera,
                                     translatedTriangle.getP2() - camera,
                                     translatedTriangle.getP3() - camera};
 
-            Triangle cameraViewTriangle = viewedTriangle.transformedBy(cameraRotationMatrix);
+            viewedTriangle.transformedBy(cameraRotationMatrix, cameraViewTriangle);
 
             Vec4 normal = cameraViewTriangle.getNormal();
             Vec4 cameraToPlaneVec = cameraViewTriangle.getP1();
@@ -262,11 +284,14 @@ int main()
             }
         }
 
+        transformClipTimeAccumSec += phaseClock.tick();
+
         // TODO: refactor — projecting to screen space and shading by light belongs in a
         // Rasterizer/Projector + Shader class, not loose in main()
+        Triangle projectedTriangle;
         for (Triangle &t : clippedTrianglesMesh.getMesh()) {
 
-            Triangle projectedTriangle = t.transformedBy(projectionMat);
+            t.transformedBy(projectionMat, projectedTriangle);
 
             Vec4 p1 = (projectedTriangle.getP1().perspectiveDivide() * Vec4(1, -1, 1, 1) + Vec4(1.0f, 1.0f, 0, 0)) * Vec4(0.5f * width, 0.5f * height, 1, 1);
             Vec4 p2 = (projectedTriangle.getP2().perspectiveDivide() * Vec4(1, -1, 1, 1) + Vec4(1.0f, 1.0f, 0, 0)) * Vec4(0.5f * width, 0.5f * height, 1, 1);
@@ -279,7 +304,11 @@ int main()
             sortedShipMesh.addTriangle(drawnTriangle);
         }
 
+        projectShadeTimeAccumSec += phaseClock.tick();
+
         sortedShipMesh.sortMesh();
+
+        sortTimeAccumSec += phaseClock.tick();
 
         for (Triangle &drawnTriangle : sortedShipMesh.getMesh())
         {
@@ -289,6 +318,39 @@ int main()
         }
 
         renderer.present();
+
+        drawTimeAccumSec += phaseClock.tick();
+
+        frameCount++;
+
+        if (inputTimeAccumSec + cameraTimeAccumSec + clearTimeAccumSec +
+                transformClipTimeAccumSec + projectShadeTimeAccumSec +
+                sortTimeAccumSec + drawTimeAccumSec >=
+            1.0f)
+        {
+            float total = inputTimeAccumSec + cameraTimeAccumSec + clearTimeAccumSec +
+                           transformClipTimeAccumSec + projectShadeTimeAccumSec +
+                           sortTimeAccumSec + drawTimeAccumSec;
+
+            std::cout << "--- avg ms over " << frameCount << " frames (" << frameCount / total << " FPS) ---\n"
+                       << "  input:          " << (inputTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  camera update:   " << (cameraTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  clear:           " << (clearTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  transform+clip:  " << (transformClipTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  project+shade:   " << (projectShadeTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  sort:            " << (sortTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  draw+present:    " << (drawTimeAccumSec / frameCount) * 1000.0f << " ms\n"
+                       << "  total:           " << (total / frameCount) * 1000.0f << " ms\n";
+
+            inputTimeAccumSec = 0.0f;
+            cameraTimeAccumSec = 0.0f;
+            clearTimeAccumSec = 0.0f;
+            transformClipTimeAccumSec = 0.0f;
+            projectShadeTimeAccumSec = 0.0f;
+            sortTimeAccumSec = 0.0f;
+            drawTimeAccumSec = 0.0f;
+            frameCount = 0;
+        }
     }
 
     return 0;

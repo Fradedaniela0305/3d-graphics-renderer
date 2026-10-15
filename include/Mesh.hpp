@@ -30,7 +30,7 @@ public:
     /**
      * Getter for mesh
      */
-    std::vector<Triangle> getMesh();
+    std::vector<Triangle>& getMesh();
 
     /**
      * Loader for .obj files

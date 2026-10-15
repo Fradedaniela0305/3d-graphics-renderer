@@ -185,7 +185,8 @@ TEST(TriangleTest, TransformedByAppliesMatrixToEachPoint)
     Vec4 p3(7.0f, 8.0f, 9.0f, 1.0f);
     Triangle triangle(p1, p2, p3);
 
-    Triangle result = triangle.transformedBy(identity);
+    Triangle result;
+    triangle.transformedBy(identity, result);
 
     EXPECT_FLOAT_EQ(result.getP1().getX(), 1.0f);
     EXPECT_FLOAT_EQ(result.getP1().getY(), 2.0f);

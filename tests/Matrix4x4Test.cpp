@@ -6,6 +6,12 @@
 #include "math/Matrix4x4.hpp"
 #include "math/Vec4.hpp"
 
+TEST(Matrix4x4Test, DefaultConstructorConstructs)
+{
+    Matrix4x4 m;
+    (void)m;
+}
+
 TEST(Matrix4x4Test, ConstructorSetsRows)
 {
     Vec4 r1(1.0f, 2.0f, 3.0f, 4.0f);

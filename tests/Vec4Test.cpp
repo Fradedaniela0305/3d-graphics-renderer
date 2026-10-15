@@ -154,6 +154,16 @@ TEST(Vec4Test, PerspectiveDivideLeavesWUnchanged)
     EXPECT_FLOAT_EQ(result.getW(), 4.0f);
 }
 
+TEST(Vec4Test, PerspectiveDivideWithZeroWLeavesVectorUnchanged)
+{
+    Vec4 v(3.0f, 4.0f, 5.0f, 0.0f);
+    Vec4 result = v.perspectiveDivide();
+    EXPECT_FLOAT_EQ(result.getX(), 3.0f);
+    EXPECT_FLOAT_EQ(result.getY(), 4.0f);
+    EXPECT_FLOAT_EQ(result.getZ(), 5.0f);
+    EXPECT_FLOAT_EQ(result.getW(), 0.0f);
+}
+
 TEST(Vec4Test, CrossCalculatesACrossBFromXYZComponents)
 {
     Vec4 v(1.0f, 0.0f, 0.0f, 1.0f);

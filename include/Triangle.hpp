@@ -2,6 +2,7 @@
 #include "Color.hpp"
 #include "math/Vec4.hpp"
 #include "math/Matrix4x4.hpp"
+#include <array>
 #include <vector>
 
 /**
@@ -40,7 +41,7 @@ public:
     /**
      * Getter for all points
      */
-    std::vector<Vec4> getPoints();
+    std::array<Vec4, 3> getPoints();
 
     /**
      * Getter for triangle's color
@@ -99,13 +100,14 @@ public:
     float zthMidPoint();
 
     /**
-     * Returns a new triangle with each point transformed by the given matrix
+     * Writes this triangle's points, transformed by the given matrix, into out.
      * @param matrix - the matrix to transform this triangle's points by
+     * @param out - triangle to overwrite with the transformed points
      */
-    Triangle transformedBy(Matrix4x4 matrix);
+    void transformedBy(Matrix4x4 &matrix, Triangle &out);
 
 private:
-    std::vector<Vec4> points;
+    std::array<Vec4, 3> points;
     Vec4 normal;
     Color color;
 

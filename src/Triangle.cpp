@@ -7,9 +7,9 @@
  */
 Triangle::Triangle(Vec4 p1, Vec4 p2, Vec4 p3)
 {
-    points.push_back(p1);
-    points.push_back(p2);
-    points.push_back(p3);
+    points[0] = p1;
+    points[1] = p2;
+    points[2] = p3;
     color = Color{255, 255, 255};
     normal = calculateNormal();
 }
@@ -48,7 +48,7 @@ Vec4 Triangle::getP3()
 /**
  * Getter for all points
  */
-std::vector<Vec4> Triangle::getPoints()
+std::array<Vec4, 3> Triangle::getPoints()
 {
     return points;
 }
@@ -181,15 +181,15 @@ float Triangle::zthMidPoint() {
 }
 
 /**
- * Returns a new triangle with each point transformed by the given matrix
+ * Writes this triangle's points, transformed by the given matrix, into out.
  */
-Triangle Triangle::transformedBy(Matrix4x4 matrix)
+void Triangle::transformedBy(Matrix4x4 &matrix, Triangle &out)
 {
-    Vec4 p1 = matrix.transformVector(points[0]);
-    Vec4 p2 = matrix.transformVector(points[1]);
-    Vec4 p3 = matrix.transformVector(points[2]);
-
-    return Triangle{p1, p2, p3};
+    out.points[0] = matrix.transformVector(points[0]);
+    out.points[1] = matrix.transformVector(points[1]);
+    out.points[2] = matrix.transformVector(points[2]);
+    out.color = Color{255, 255, 255};
+    out.normal = out.calculateNormal();
 }
 
 /**

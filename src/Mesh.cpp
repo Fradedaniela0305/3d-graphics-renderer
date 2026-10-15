@@ -25,7 +25,7 @@ void Mesh::addTriangle(Triangle triangle)
 /**
  * Getter for mesh
  */
-std::vector<Triangle> Mesh::getMesh()
+std::vector<Triangle>& Mesh::getMesh()
 {
     return mesh;
 }

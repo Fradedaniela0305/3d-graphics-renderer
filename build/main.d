@@ -50,7 +50,8 @@ build/main.o: src/main.cpp include/Window.hpp \
   /opt/homebrew/include/SDL2/SDL_locale.h \
   /opt/homebrew/include/SDL2/SDL_misc.h include/Input.hpp \
   include/Renderer.hpp include/Color.hpp include/Triangle.hpp \
-  include/math/Vec4.hpp include/math/Matrix4x4.hpp include/Mesh.hpp
+  include/math/Vec4.hpp include/math/Matrix4x4.hpp include/Mesh.hpp \
+  include/Clock.hpp
 
 include/Window.hpp:
 
@@ -169,3 +170,5 @@ include/math/Vec4.hpp:
 include/math/Matrix4x4.hpp:
 
 include/Mesh.hpp:
+
+include/Clock.hpp:
